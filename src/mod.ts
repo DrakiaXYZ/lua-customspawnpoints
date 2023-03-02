@@ -118,7 +118,7 @@ class Mod implements IPostDBLoadMod
             }
 
             let mapBase = databaseServer.locations[map].base;
-            if (mapBase.Locked === true || mapBase?.EnabledCoop === undefined)
+            if (mapBase.Locked === true || (mapBase?.EnabledCoop === undefined && mapBase?.EnableCoop === undefined))
             {
                 continue;
             }
