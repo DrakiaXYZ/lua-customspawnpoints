@@ -136,6 +136,22 @@ class Mod implements IPostDBLoadMod
             if (this.defaultSpawnParms[map] === undefined && mapBase.SpawnPointParams !== undefined)
             {
                 this.defaultSpawnParms[map] = jsonUtil.clone(mapBase.SpawnPointParams);
+
+                // Handle "All" as a category by rewriting it to be ["Bot", "Boss", "Player"], so we can re-use existing logic
+                // Only include "Player" if an Infiltration is set
+                for (let key = 0; key < this.defaultSpawnParms[map].length; key++)
+                {
+                    let values = this.defaultSpawnParms[map][key];
+                    if (values.Categories.length === 1 && values.Categories[0].toLowerCase() === "all")
+                    {
+                        values.Categories = ["Bot", "Boss"];
+
+                        if (values.Infiltration)
+                        {
+                            values.Categories.push("Player");
+                        }
+                    }
+                }
             }
 
             if (this.defaultSpawnParms[map] !== undefined)
@@ -388,6 +404,17 @@ class Mod implements IPostDBLoadMod
                         {
                             let zoneConfig = config[zoneName][index];
                             let bSkip = false;
+
+                            // Handle "All" as a category by rewriting it to be ["Bot", "Boss", "Player"], so we can re-use existing logic
+                            // Only include "Player" if an Infiltration is set
+                            if (zoneConfig.Categories.length === 1 && zoneConfig.Categories[0].toLowerCase() === "all")
+                            {
+                                zoneConfig.Categories = ["Bot", "Boss"];
+                                if (zoneConfig.Infiltration)
+                                {
+                                    zoneConfig.Categories.push("Player");
+                                }
+                            }
 
                             // Checking Infiltration
                             if (zoneConfig["Infiltration"].length <= 1)
